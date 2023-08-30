@@ -66,6 +66,7 @@ router.get("/:_postId", async (req, res) => {
       postId: currentPost.postId,
       user: currentPost.user,
       title: currentPost.title,
+      content: currentPost.content,
       createAt: currentPost.createAt,
     };
     console.log(newPost);
