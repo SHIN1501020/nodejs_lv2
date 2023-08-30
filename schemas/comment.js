@@ -25,7 +25,7 @@ const CommentSchema = new mongoose.Schema({
 });
 
 //MongoDB에 저장되지 않은 속성
-CommentSchema.virtual("CommentId").get(function () {
+CommentSchema.virtual("commentId").get(function () {
   return this._id.toHexString();
 });
 CommentSchema.set("toJSON", {

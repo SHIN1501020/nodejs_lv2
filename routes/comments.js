@@ -53,7 +53,7 @@ router.get("/:_postId/comments", async (req, res) => {
       .exec();
     const newComments = comments.map((x) => {
       return {
-        commnetId: x.commnetId,
+        commentId: x.commentId,
         user: x.user,
         content: x.content,
         createAt: x.createAt,
