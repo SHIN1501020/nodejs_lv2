@@ -1,7 +1,6 @@
 import express from "express";
 import Post from "../schemas/post.js";
 import Joi from "joi";
-import post from "../schemas/post.js";
 
 //joi 게시글 생성 유효성 검사
 const createPostSchema = Joi.object({
