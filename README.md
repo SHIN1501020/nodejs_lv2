@@ -3,7 +3,6 @@
 
    param, body 사용
 
-
    
 2. HTTP Method의 대표적인 4가지는 `GET`, `POST`, `PUT`, `DELETE` 가있는데 각각 어떤 상황에서 사용하셨나요?
 
@@ -15,12 +14,10 @@
    
    DELETE : 삭제
 
-
    
 4. RESTful한 API를 설계했나요? 어떤 부분이 그런가요? 어떤 부분이 그렇지 않나요?
 
    method 사용에 있어서는 RESTful 한 것 같다. 대신 url에서 param를 '_'으로 시작했는데 이게 RESTful하다고 볼 수 있는지 모르겠다.
-
 
    
 5. 역할별로 Directory Structure를 분리하였을 경우 어떠한 이점이 있을까요?
