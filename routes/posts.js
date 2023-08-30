@@ -1,6 +1,7 @@
 import express from "express";
 import Post from "../schemas/post.js";
 import Joi from "joi";
+import post from "../schemas/post.js";
 
 //joi 게시글 생성 유효성 검사
 const createPostSchema = Joi.object({
@@ -41,7 +42,16 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   //게시글을 createAt 내림차순 기준으로 정렬
   const posts = await Post.find().sort("-createAt").exec();
-  return res.status(200).json({ data: posts });
+  console.log(posts);
+  const newPosts = posts.map((x) => {
+    return {
+      postId: x.postId,
+      user: x.user,
+      title: x.title,
+      createAt: x.createAt,
+    };
+  });
+  return res.status(200).json({ data: newPosts });
 });
 
 //특정 게시글 조회
@@ -49,12 +59,18 @@ router.get("/:_postId", async (req, res) => {
   try {
     const { _postId } = req.params;
     await postIdSchema.validateAsync(_postId);
-
     const currentPost = await Post.findById(_postId).exec();
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
-    return res.status(200).json({ data: currentPost });
+    const newPost = {
+      postId: currentPost.postId,
+      user: currentPost.user,
+      title: currentPost.title,
+      createAt: currentPost.createAt,
+    };
+    console.log(newPost);
+    return res.status(200).json({ data: newPost });
   } catch (err) {
     return res
       .status(400)

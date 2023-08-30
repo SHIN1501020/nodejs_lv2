@@ -51,8 +51,15 @@ router.get("/:_postId/comments", async (req, res) => {
     const comments = await Comment.find({ postId: _postId })
       .sort("-createAt")
       .exec();
-
-    return res.status(200).json({ data: comments });
+    const newComments = comments.map((x) => {
+      return {
+        commnetId: x.commnetId,
+        user: x.user,
+        content: x.content,
+        createAt: x.createAt,
+      };
+    });
+    return res.status(200).json({ data: newComments });
   } catch (err) {
     return res
       .status(400)
