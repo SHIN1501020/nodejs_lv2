@@ -1,0 +1,20 @@
+{
+  "name": "lv1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app",
+    "format": "prettier --write *.js **/*.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "joi": "^17.10.0",
+    "mongoose": "^7.4.5"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  }
+}
