@@ -1,5 +1,6 @@
 import express from "express";
-import Post from "../schemas/post.js";
+import { prisma } from '../uttils/prisma/index.js';
+
 import Joi from "joi";
 
 //joi 게시글 생성 유효성 검사
@@ -23,12 +24,19 @@ const router = express.Router();
 
 //게시글 생성
 router.post("/", async (req, res) => {
-  //클라이언트에게 전달받은 데이터를 변수에 저장합니다.
   try {
     const validation = await createPostSchema.validateAsync(req.body);
     const { user, password, title, content } = validation;
-    const post = new Post({ user, password, title, content });
-    await post.save();
+
+    await prisma.posts.create({
+      data: {
+        user,
+        password,
+        title,
+        content
+      }
+    })
+
     return res.status(201).json({ message: "게시글을 생성하였습니다." });
   } catch (err) {
     return res
@@ -39,18 +47,18 @@ router.post("/", async (req, res) => {
 
 //전체 게시글 조회
 router.get("/", async (req, res) => {
-  //게시글을 createAt 내림차순 기준으로 정렬
-  const posts = await Post.find().sort("-createAt").exec();
-  console.log(posts);
-  const newPosts = posts.map((x) => {
-    return {
-      postId: x.postId,
-      user: x.user,
-      title: x.title,
-      createAt: x.createAt,
-    };
-  });
-  return res.status(200).json({ data: newPosts });
+  const posts = await prisma.posts.findMany({
+        orderBy: {
+          createdAt: 'desc'
+        },
+        select: {
+          postId: true,
+          user: true,
+          title: true,
+          createdAt: true
+        }
+  })
+  return res.status(200).json({ data: posts });
 });
 
 //특정 게시글 조회
@@ -58,19 +66,23 @@ router.get("/:_postId", async (req, res) => {
   try {
     const { _postId } = req.params;
     await postIdSchema.validateAsync(_postId);
-    const currentPost = await Post.findById(_postId).exec();
+
+    const currentPost = await prisma.posts.findFirst({
+      where: {postId: +_postId},
+      select: {
+        postId: true,
+        user: true,
+        title: true,
+        content: true,
+        createdAt: true
+      }
+    })
+    
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
-    const newPost = {
-      postId: currentPost.postId,
-      user: currentPost.user,
-      title: currentPost.title,
-      content: currentPost.content,
-      createAt: currentPost.createAt,
-    };
-    console.log(newPost);
-    return res.status(200).json({ data: newPost });
+
+    return res.status(200).json({ data: currentPost });
   } catch (err) {
     return res
       .status(400)
@@ -86,20 +98,24 @@ router.put("/:_postId", async (req, res) => {
     const validation = await updatePostSchema.validateAsync(req.body);
     const { password, title, content } = validation;
 
-    const currentPost = await Post.findById(_postId).exec();
+    const currentPost = await prisma.posts.findUnique({
+      where: { postId: +_postId },
+    })
+
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
+
     if (currentPost.password === password) {
-      // currentPost.title = title;
-      // currentPost.content = content;
-      // await currentPost.save();
-      await Post.findOneAndUpdate(
-        { _id: _postId, password },
-        { title, content },
-        { new: true },
-      ).exec();
+      await prisma.posts.update({
+        data: { title, content },
+        where: {
+          postId: +_postId,
+          password
+        }
+      })
     }
+
     return res.status(200).json({ message: "게시글을 수정하였습니다." });
   } catch (err) {
     return res
@@ -116,12 +132,16 @@ router.delete("/:_postId", async (req, res) => {
     const { password } = req.body;
     await passwordSchema.validateAsync(password);
 
-    const currentPost = await Post.findById(_postId).exec();
+    const currentPost = await prisma.posts.findFirst({
+      where: { postId: +_postId }
+    })
+
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
+    
     if (currentPost.password === password) {
-      await Post.deleteOne({ _id: _postId });
+      await prisma.posts.delete({ where: { postId: +_postId, password}})
     }
     return res.status(200).json({ message: "게시글을 삭제하였습니다." });
   } catch (err) {

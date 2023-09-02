@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//lv2
+// schema.prisma
+// @id : 기본키
+// 왼쪽 js이름 - 오른쪽 map() DB이름
+// String? '?' null을 허용, @db.Text db에서는 text라는 타입 사용
+
+//posts
+model Posts {
+  postId    Int       @id @default(autoincrement()) @map("postId")
+  user      String    @map("user")
+  password  String    @map("password")
+  title     String    @map("title")
+  content   String    @db.Text @map("content") 
+  createdAt  DateTime  @default(now()) @map("createdAt")   
+
+  @@map("Posts")
+}
+
+//comments
+model Comments {
+  postId      Int       @map("postId")
+  commentId   Int       @id @default(autoincrement()) @map("commentId")
+  user        String    @map("user")
+  password    String    @map("password")
+  content     String    @db.Text @map("content") 
+  createdAt    DateTime  @default(now()) @map("createdAt")   
+
+  @@map("Comments")
+}
