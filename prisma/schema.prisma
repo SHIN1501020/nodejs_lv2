@@ -18,24 +18,24 @@ datasource db {
 
 //posts
 model Posts {
-  postId    Int       @id @default(autoincrement()) @map("postId")
-  user      String    @map("user")
-  password  String    @map("password")
-  title     String    @map("title")
-  content   String    @db.Text @map("content") 
-  createdAt  DateTime  @default(now()) @map("createdAt")   
+  postId      Int       @id @default(autoincrement()) @map("id")
+  user        String    @map("user")
+  password    String    @map("password")
+  title       String    @map("title")
+  content     String    @db.Text @map("content") 
+  createdAt   DateTime  @default(now()) @map("createdAt")   
 
   @@map("Posts")
 }
 
 //comments
 model Comments {
-  postId      Int       @map("postId")
-  commentId   Int       @id @default(autoincrement()) @map("commentId")
-  user        String    @map("user")
-  password    String    @map("password")
-  content     String    @db.Text @map("content") 
-  createdAt    DateTime  @default(now()) @map("createdAt")   
+  postId        Int       @map("postId")
+  commentId     Int       @id @default(autoincrement()) @map("id")
+  user          String    @map("user")
+  password      String    @map("password")
+  content       String    @db.Text @map("content") 
+  createdAt     DateTime  @default(now()) @map("createdAt")   
 
   @@map("Comments")
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import routes from "./routes/index.js";
+import IndexRouter from "./routes/index.js";
 import { config } from "dotenv";
 
 config();
@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
   return res.json({ message: "Hi!" });
 });
 
-app.use("/", [router, routes]);
+app.use("/", [router, IndexRouter]);
 
 app.listen(PORT, () => {
   console.log(PORT, "포트로 서버가 열렸어요!");
