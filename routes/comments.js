@@ -1,5 +1,5 @@
 import express from "express";
-import { prisma } from '../uttils/prisma/index.js';
+import { prisma } from "../uttils/prisma/index.js";
 import Joi from "joi";
 
 //joi 게시글 생성 유효성 검사
@@ -34,8 +34,8 @@ router.post("/:_postId/comments", async (req, res) => {
         user,
         password,
         content,
-      }
-    })
+      },
+    });
 
     return res.status(201).json({ message: "댓글을 생성하였습니다." });
   } catch (err) {
@@ -53,18 +53,18 @@ router.get("/:_postId/comments", async (req, res) => {
   try {
     const { _postId } = req.params;
     await postIdSchema.validateAsync(_postId);
-    
+
     const comments = await prisma.comments.findMany({
       orderBy: {
-        createdAt: 'desc'
+        createdAt: "desc",
       },
       select: {
         commentId: true,
         user: true,
         content: true,
-        createdAt: true
-      }
-    })
+        createdAt: true,
+      },
+    });
 
     return res.status(200).json({ data: comments });
   } catch (err) {
@@ -85,8 +85,8 @@ router.put("/:_postId/:_commentId", async (req, res) => {
     const { password, content } = validation;
 
     const currentComment = await prisma.comments.findUnique({
-      where: { commentId: +_commentId},
-    })
+      where: { commentId: +_commentId },
+    });
 
     if (!currentComment) {
       return res.status(404).json({ message: "댓글 조회에 실패하였습니다." });
@@ -97,9 +97,9 @@ router.put("/:_postId/:_commentId", async (req, res) => {
         data: { content },
         where: {
           commentId: +_commentId,
-          password
-        }
-      })
+          password,
+        },
+      });
     }
 
     return res.status(200).json({ message: "댓글을 수정하였습니다." });
@@ -124,15 +124,17 @@ router.delete("/:_postId/:_commentId", async (req, res) => {
     await passwordSchema.validateAsync(password);
 
     const currentComment = await prisma.comments.findFirst({
-      where: { commentId: +_commentId }
-    })
+      where: { commentId: +_commentId },
+    });
 
     if (!currentComment) {
       return res.status(404).json({ message: "댓글 조회에 실패하였습니다." });
     }
 
     if (currentComment.password === password) {
-      await prisma.comments.delete({ where: { commentId: +_commentId, password}})
+      await prisma.comments.delete({
+        where: { commentId: +_commentId, password },
+      });
     }
 
     return res.status(200).json({ message: "게시글을 삭제하였습니다." });

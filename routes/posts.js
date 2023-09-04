@@ -1,5 +1,5 @@
 import express from "express";
-import { prisma } from '../uttils/prisma/index.js';
+import { prisma } from "../uttils/prisma/index.js";
 
 import Joi from "joi";
 
@@ -33,9 +33,9 @@ router.post("/", async (req, res) => {
         user,
         password,
         title,
-        content
-      }
-    })
+        content,
+      },
+    });
 
     return res.status(201).json({ message: "게시글을 생성하였습니다." });
   } catch (err) {
@@ -48,16 +48,16 @@ router.post("/", async (req, res) => {
 //전체 게시글 조회
 router.get("/", async (req, res) => {
   const posts = await prisma.posts.findMany({
-        orderBy: {
-          createdAt: 'desc'
-        },
-        select: {
-          postId: true,
-          user: true,
-          title: true,
-          createdAt: true
-        }
-  })
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      postId: true,
+      user: true,
+      title: true,
+      createdAt: true,
+    },
+  });
   return res.status(200).json({ data: posts });
 });
 
@@ -68,16 +68,16 @@ router.get("/:_postId", async (req, res) => {
     await postIdSchema.validateAsync(_postId);
 
     const currentPost = await prisma.posts.findFirst({
-      where: {postId: +_postId},
+      where: { postId: +_postId },
       select: {
         postId: true,
         user: true,
         title: true,
         content: true,
-        createdAt: true
-      }
-    })
-    
+        createdAt: true,
+      },
+    });
+
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
@@ -100,7 +100,7 @@ router.put("/:_postId", async (req, res) => {
 
     const currentPost = await prisma.posts.findUnique({
       where: { postId: +_postId },
-    })
+    });
 
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
@@ -111,9 +111,9 @@ router.put("/:_postId", async (req, res) => {
         data: { title, content },
         where: {
           postId: +_postId,
-          password
-        }
-      })
+          password,
+        },
+      });
     }
 
     return res.status(200).json({ message: "게시글을 수정하였습니다." });
@@ -133,15 +133,15 @@ router.delete("/:_postId", async (req, res) => {
     await passwordSchema.validateAsync(password);
 
     const currentPost = await prisma.posts.findFirst({
-      where: { postId: +_postId }
-    })
+      where: { postId: +_postId },
+    });
 
     if (!currentPost) {
       return res.status(404).json({ message: "게시글 조회에 실패하였습니다." });
     }
-    
+
     if (currentPost.password === password) {
-      await prisma.posts.delete({ where: { postId: +_postId, password}})
+      await prisma.posts.delete({ where: { postId: +_postId, password } });
     }
     return res.status(200).json({ message: "게시글을 삭제하였습니다." });
   } catch (err) {
